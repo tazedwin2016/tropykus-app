@@ -13,12 +13,12 @@
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-100 transition ease-in-out delay-10 hover:bg-gray-200 ">
-              <tr v-for="cripto in moneda" :key="cripto.token">
+              <tr v-for="cripto in coinbase" :key="cripto.base">
                 <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="text-sm text-gray-500">{{ cripto.token }}</div>
+                  <div class="text-sm text-gray-500">{{ cripto.base }}</div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {{ cripto.precio }}
+                  {{ cripto.price }}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
                   <button @click="falloIntercambio" class="transition ease-in-out delay-600 hover:-translate-y-1 hover:scale-200 duration-300">
@@ -37,6 +37,7 @@
       <div class="py-6 align-middle inline-block min-w-full sm:px-6 lg:px-8">
         <div class="shadow overflow-hidden border-b border-gray-500 sm:rounded-lg ">
           <tr class="text-2xl">Binace Smart Chain</tr>
+          {{ coinbase }}
           <table class="min-w-full divide-y divide-gray-300">
             <thead class="bg-gray-100">
               <tr>
@@ -46,12 +47,12 @@
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-100 transition ease-in-out delay-10 hover:bg-gray-200 ">
-              <tr v-for="cripto in moneda" :key="cripto.token">
+              <tr v-for="cripto in uniswap" :key="cripto.base">
                 <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="text-sm text-gray-500">{{ cripto.token }}</div>
+                  <div class="text-sm text-gray-500">{{ cripto.base }}</div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {{ cripto.precio }}
+                  {{ cripto.price }}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
                   <button @click="falloIntercambio" class="transition ease-in-out delay-600 hover:-translate-y-1 hover:scale-200 duration-300">
@@ -67,21 +68,36 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script>
+/* eslint-disable */
+import { defineComponent, onMounted } from 'vue';
 import Swal from 'sweetalert2';
+import { db, collection, getDocs } from '../utils/firebase.js';
+import { doc, onSnapshot } from "firebase/firestore";
 
-const moneda = [
-  {
-    token: 'token',
-    precio: 'precio',
-    image:
-      'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=4&w=256&h=256&q=60',
-  },
-  // More moneda...
-];
+let coinbase = [];
+let uniswap = [];
 export default defineComponent({
   setup() {
+    async function getCoinbase(DB) {
+    const coinbaseCol = collection(DB, 'coinbase');
+    const coinSnapshot = await getDocs(coinbaseCol);
+    const coinList = coinSnapshot.docs.map((doc) => doc.data());
+    console.log(coinList);
+    return coinList;
+    }
+    async function getUniswap(DB) {
+    const uniswapCol = collection(DB, 'uniswap');
+    const unisSnapshot = await getDocs(uniswapCol);
+    const unisList = unisSnapshot.docs.map((doc) => doc.data());
+    console.log(unisList);
+    return unisList;
+    }
+    onMounted(async () => {
+    coinbase = await getCoinbase(db);
+    uniswap = await getUniswap(db);
+    console.log(coinbase);
+    });
     const falloIntercambio = () => {
       Swal.fire({
         title: 'OPPS',
@@ -90,7 +106,8 @@ export default defineComponent({
       });
     };
     return {
-      moneda,
+      coinbase,
+      uniswap,
       falloIntercambio,
     };
   },

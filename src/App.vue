@@ -5,32 +5,11 @@
 </template>
 
 <script>
-import { onMounted } from 'vue';
-import { db, collection, getDocs } from './utils/firebase';
 /* eslint-disable */
 
 export default ({
-  name: 'App', 
-  setup() {
-    async function getCoinbase(DB) {
-    const coinbaseCol = collection(DB, 'coinbase');
-    const coinSnapshot = await getDocs(coinbaseCol);
-    const coinList = coinSnapshot.docs.map((doc) => doc.data());
-    console.log(coinList);
-    return coinList;
-    }
-    async function getUniswap(DB) {
-    const uniswapCol = collection(DB, 'uniswap');
-    const unisSnapshot = await getDocs(uniswapCol);
-    const unisList = unisSnapshot.docs.map((doc) => doc.data());
-    console.log(unisList);
-    return unisList;
-    }
-    onMounted(() => {
-    getCoinbase(db);
-    getUniswap(db);
-    });
-  },
+  name: 'App',
+
 });
 </script>
 

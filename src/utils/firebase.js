@@ -1,6 +1,5 @@
 import { initializeApp } from 'firebase/app';
 import { getFirestore, collection, getDocs } from 'firebase/firestore';
-import { ref, onUnmounted } from 'vue';
 
 const firebaseConfig = {
     apiKey: 'AIzaSyCitjTWXlT7eK42ssu7CXh48LgFopdxNNM',
